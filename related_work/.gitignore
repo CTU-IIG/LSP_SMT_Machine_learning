@@ -1,0 +1,10 @@
+*.out
+*.log
+*.blg
+related_work.pdf
+related_work.aux
+related_work.bbl
+related_work.synctex.gz
+related_work.fdb_latexmk
+related_work.fls
+makeenv
