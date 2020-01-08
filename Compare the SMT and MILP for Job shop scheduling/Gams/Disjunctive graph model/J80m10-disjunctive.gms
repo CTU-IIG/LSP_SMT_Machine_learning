@@ -7,9 +7,9 @@ alias (o,oo);
 alias (j,jj);
 
 scalar G a Big number  /10000/ ;
-scalar n_machine a Big number  /10/ ;
-scalar n_job a Big number  /8/ ;
-scalar n_operation a Big number  /10/ ;
+scalar n_machine number of machines  /10/ ;
+scalar n_job number of jobs  /8/ ;
+scalar n_operation number of operations for each job  /10/ ;
 
 $onecho > myspread.txt
 I="%system.fp%myspread.xls"
