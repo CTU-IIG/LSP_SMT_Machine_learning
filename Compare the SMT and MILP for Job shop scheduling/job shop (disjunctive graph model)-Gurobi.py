@@ -28,7 +28,7 @@ model = Model('disjunctive graph')
 
 s = model.addVars(A,name='s')
 y = model.addVars(B,vtype=GRB.BINARY,name='y')
-c_t = model.addVars([(j) for j in range(NB_JOBS) if j<NB_JOBS-1],name='complitaion time') 
+c_t = model.addVars([(j) for j in range(NB_JOBS) if j<NB_JOBS-1],name='completaion time') 
 
 
 
