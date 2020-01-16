@@ -31,7 +31,7 @@ G=10000
 mdl = Model('disjunctive_graph')
 s= mdl.continuous_var_dict(A,name='s')
 y=mdl.binary_var_dict(B,name='y')
-c_t=mdl.continuous_var_dict([(j) for j in range(NB_JOBS) if j<NB_JOBS-1],name='c_t')
+c_t=mdl.continuous_var_dict([(j) for j in range(NB_JOBS) if j<NB_JOBS-1],name='completion time')
 
 z=mdl.minimize(mdl.sum(c_t[j] for j in range(NB_JOBS) if j<NB_JOBS-1))
 
