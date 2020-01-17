@@ -17,8 +17,8 @@ MACHINES = [[JOBS[j][2 * s] for s in range(NB_MACHINES)] for j in range(NB_JOBS)
 
 DURATION = [[JOBS[j][2 * s + 1] for s in range(NB_MACHINES)] for j in range(NB_JOBS)]
 
-obj = Int('objectie_function')
-c_t = [Int("c_t_%s" % (j)) for j in range(NB_JOBS)]
+obj = Real('objectie_function')
+c_t = [Real("c_t_%s" % (j)) for j in range(NB_JOBS)]
 
 def must_not_overlap (s, i1 , i2):
     (i1_begin , i1_end)=i1
@@ -44,8 +44,8 @@ for job in range(NB_JOBS):
     for t in range(NB_MACHINES):
         machine=MACHINES[job][t]
         duration=DURATION[job][t]
-        begin=Int('j%d_t%d_begin ' % (job , t))
-        end=Int('j%d_t%d_end ' % (job , t))
+        begin=Real('j%d_t%d_begin ' % (job , t))
+        end=Real('j%d_t%d_end ' % (job , t))
         if (begin ,end) not in tasks_for_machines[machine ]:
             tasks_for_machines[machine ]. append ((job ,begin ,end))
         if (begin ,end) not in jobs_array_tmp:
@@ -81,3 +81,33 @@ makespan = [m.evaluate(c_t[job]) for job in range(NB_JOBS)]
 print(objective_function)
 print(makespan)
 print("--- %s seconds ---" % (time.time() - start_time))
+
+
+"""
+text_result =[]
+# construct Gantt chart:
+ms_long = m[makespan ]. as_long ()
+for machine in range(machines):
+    st=[ None for i in range(ms_long)]
+    for task in tasks_for_machines[machine ]:
+        job=task [0]
+        begin=m[task [1]]. as_long ()
+        end=m[task [2]]. as_long ()
+        for i in range(begin ,end):
+            st[i]=job
+    ss=""
+    for i,t in enumerate(st):
+        ss=ss+("." if t== None else str(st[i]))
+    text_result.append(ss)
+# we need this juggling to rotate Gantt chart ...
+print("machines :"),
+for m in range(len(text_result)):
+    print(m), 
+print ("")
+print ("---------")
+for time_unit in range(len(text_result [0])):
+    print ("t=%3d :" % (time_unit)),
+    for m in range(len(text_result)):
+        print (text_result[m][ time_unit]),
+    print ("")
+    """
