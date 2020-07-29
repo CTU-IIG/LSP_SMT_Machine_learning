@@ -23,6 +23,8 @@
 \setlength{\pdfpagewidth}{8.5in}  % DO NOT CHANGE THIS
 \setlength{\pdfpageheight}{11in}  % DO NOT CHANGE THIS
 
+\usepackage[utf8]{inputenc} % To input utf8 characters
+
 %\nocopyright
 %PDF Info Is REQUIRED.
 % For /Author, add all authors within the parentheses, separated by commas. No accents or commands.
@@ -377,7 +379,7 @@ In this section the credibility of the presented SMT model and the performance a
 \end{quote}
 
 The SMT model is coded and solved by the z3 4.8.7.0 in python. The neural networks model are created and trained by Tensorflow 2.0.0 in python. All models run on a PC with Core i7 processor and 8 GB of RAM. In our numerical experiments, we used 15 random instances in different size that are labeled with (O-M-T), which respectively represent the number of operations, machines and periods. The performance of the proposed robust approach is investigated in terms of the ability to maintain the feasibility of the problem based on Monte Carlo simulation.
-The figure 3 and 4 illustrate the histogram charts related to percentage of infeasible solutions for comparing the NN, NN-Kmean and deterministic methods together. The results of these charts are obtained during the simulation with 100 iterations while the RP approach is implemented 30 times in each iteration (totally 100×30=3000 times).
+The figure 3 and 4 illustrate the histogram charts related to percentage of infeasible solutions for comparing the NN, NN-Kmean and deterministic methods together. The results of these charts are obtained during the simulation with 100 iterations while the RP approach is implemented 30 times in each iteration (totally $100\times 30=3000$ times).
 Figure 3 shows that the NN is significantly effective to reduce the number of infeasible solutions comparing the deterministic RP approach. The mean of the number of infeasible solution is decreased from 19 to 13.5 (40\% improvement) by using NN method. The improvement will be more by using NN-Kmean method. Figure 4 shows mean of the number of infeasible solution is decreased to 8.7 in the NN-Kmean method (55\% improvement than NN and 118\% improvement totally).
 In order to be more confident, we have been used the $t$-test for mean equality hypothesis test between the mean of the number of the infeasible solutions obtained by NN, NN-Kmean, and deterministic approaches. The null hypothesis ($H0$) and the alternative hypothesis ($H1$) are as follow:
 \begin{quote}
