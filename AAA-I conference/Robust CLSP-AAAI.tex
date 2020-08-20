@@ -29,7 +29,7 @@
 %PDF Info Is REQUIRED.
 % For /Author, add all authors within the parentheses, separated by commas. No accents or commands.
 % For /Title, add Title in Mixed Case. No accents or commands. Retain the parentheses.
- \pdfinfo{
+ \pdfinfo{%
 /Title (Data driven robust optimization for planning and replanning the Lot-sizing and scheduling problems: Machine learning approach)
 /Author (Mohammad Rohaninejad, Mikoláš Janota, Zdeněk Hanzálek)
 } 
@@ -58,15 +58,22 @@
 \maketitle
 
 \begin{abstract}
-This paper develops a new data-driven robust approach based on machine learning for the dynamic lot-sizing and scheduling problem. The system learns in a manufacturing environment by using machine learning to tackle the challenge of demand and processing time uncertainty. The SMT based formulation of the problem is developed for the job shop system considering the sequence-dependent setup time. Then a robust solution procedure has been proposed with combination of the repression neural network and a K-mean based heuristic. This procedure is based on determining the profitable value of safety stock and safety slack levels as a strategy for creating robustness.We also developed a Monte Carlo simulation to assess the performance of proposed robust approach comparing the worst-case scenario, average-scenario and also deterministic rolling planning approaches. Computational results show that proposed approach is effective and considerably better than other approaches to producing less nervous and feasible solutions. 
+This paper develops a new data-driven robust approach based on machine learning for the dynamic lot-sizing and scheduling problem. The system learns in a manufacturing environment by using machine learning to tackle the challenge of demand and processing time uncertainty. The SMT based formulation of the problem is developed for the job shop system considering the sequence-dependent setup time. Then a robust solution procedure is proposed with combination of a regression neural network and a K-mean based heuristic. This procedure is based on determining the profitable value of safety stock and safety slack levels as a strategy for creating robustness. We also develop a Monte Carlo simulation to assess the performance of the proposed robust approach comparing the worst-case scenario, average-scenario and also deterministic rolling planning approaches. Computational results show that the proposed approach is effective and considerably better than other approaches to producing less nervous and feasible solutions. 
 \end{abstract}
 
 
 
 \section{Introduction}
 
-Integrated lot-sizing and scheduling (ILSP) is one of the most important and frequently-used problems in production planning which are considered among medium-term or long-term planning (Rohaninejad et al. 2015). In ILSP two types of decision variables including the master planning variables (how much of jobs should be produce in which periods) and variables related to the detailed schedule (sequence of jobs within the periods) are usually determined during a finite planning horizon. The capacitated lot-sizing and scheduling problem (CLSP) is NP-hard (Bitran and Yanasse 1982). In addition finding the feasible solution for CLSP is as well NP-hard (Maes et al. 1991). This complexity will intensify in a dynamic environment so that meeting the client’s delivery time (without shortage) is often very difficult in dynamic CLSP. In dynamic environments the initial plans are immediately affected by unpredictable noise such as demand or processing time fluctuations, machines breakdown, due date changes, order cancellation, etc. These disruptions are generally replanning or rescheduling triggers and usually cause to update of decision variables via a rolling  planning (RP) manner. Predictive, completely reactive, and mixed predictive-reactive are the three common strategies to deal the production planning with uncertainty. In the predictive or predictive-reactive strategies all or some decisions regarding control variables are made in advance and remained control variables are revised in response to real-time events. These strategies require a minimum level of prediction and information regarding distribution function. However, the majority of real-life applications are indeed dynamic due to uncontrollable and hard-to-predict events (Baykasoğlu and Ozsoydan 2018). Nevertheless, the completely reactive rescheduling is widely applicable while all control variables are revised in response of real-time disruptions. Preserving the feasibility in the completely reactive rescheduling is very hard because of the high sensitivity of schedule provided in advance (original plans) to the change of data. Therefore, increasing the resiliency of the original plan to absorb the effect of disruptions is a natural reaction to that can be achieved by the robust optimization approach. Robust optimization is an effective approach to producing less nervous solutions with less need for revision in different situations.  Data driven robust production planning is a new paradigm that is formed as a result of explosion in the availability of data during last decade. This approach uses the  historical data while are available from a discrete event simulation or real production for interpretation of the probability function and uncertainty behavior.
-This paper proposes a completely reactive strategy for scheduling and rescheduling of the dynamic CLSP in job shop under the demand and processing time uncertainty. The rescheduling algorithm is implemented in a periodic pattern in the first of each period considering the new realized data. This algorithm is based on a new data-driven robust model under satisfiability modulo theory (SMT) while some parameters of the model are updated using  machine learning (ML). 
+Integrated lot-sizing and scheduling (ILSP) is one of the most important and frequently-used problems in production planning which are considered among medium-term or long-term planning (Rohaninejad et al.\ 2015). In ILSP two types of decision variables including the master planning variables (how  many jobs should be produced in which periods) and variables related to the detailed schedule (sequence of jobs within the periods) are usually determined during a finite planning horizon. The capacitated lot-sizing and scheduling problem (CLSP) is NP-hard (Bitran and Yanasse 1982). In addition finding the feasible solution for CLSP is as well NP-hard (Maes et al.\ 1991). This complexity  intensifies in a dynamic environment so that meeting the client's delivery time (without shortage) is often very difficult in dynamic CLSP. 
+
+In dynamic environments the initial plans are affected by unpredictable noise such as demand or processing time fluctuations, machines breakdown, due date changes, order cancellation, etc. These disruptions are generally replanning or rescheduling triggers and usually cause the update of decision variables via a \emph{rolling  planning (RP)} manner. Predictive, completely reactive, and mixed predictive-reactive are the three common strategies to deal with uncertainty.
+
+In the predictive or predictive-reactive strategies all or some decisions regarding control variables are made in advance and remaining control variables are revised in response to real-time events. These strategies require a minimum level of prediction and information regarding distribution function. However, the majority of real-life applications are indeed dynamic due to uncontrollable and hard-to-predict events (Baykasoğlu and Ozsoydan 2018). Nevertheless, the completely reactive rescheduling is widely applicable where all control variables are revised in response to real-time disruptions.
+
+Preserving feasibility in the completely reactive rescheduling is very hard because of the high sensitivity of schedule provided in advance (original plans) to the change of data. Therefore, it is natural to increase the resiliency of the original plan by robust optimization. Robust optimization is an effective approach to producing less nervous solutions with  diminishing the need for revision in different situations.  Data driven robust production planning is a new paradigm that is formed as a result of explosion in the availability of data during last decade. This approach uses the  historical data available from a discrete event simulation or real production for interpretation of the probability function and uncertainty behavior.
+
+This paper proposes a completely reactive strategy for scheduling and rescheduling of the dynamic CLSP in job shop under demand and processing time uncertainty. The rescheduling algorithm is implemented in a periodic pattern, which considers the new realized data at the beginning of each period. This algorithm is based on a new data-driven robust model under satisfiability modulo theories (SMT) while some parameters of the model are updated using  machine learning (ML). 
 
 \section{Literature review}
 The scheduling decisions are not integrated into the classical lot-sizing problems and the usual approach, therefore, is to solve lot-sizing problems first and then solve scheduling for each period separately afterward (Drexl and Kimms 1997). Discrete lot-sizing and scheduling (DLSP), continuous setup lot-sizing problem (CLSP), proportional lot-sizing and scheduling problem (PLSP) and general lot-sizing and scheduling problem (GLSP) are some attempts to integrate them. For a detailed review of these models see (Drexl and Kimms 1997).\\
@@ -75,19 +82,22 @@ In term of robust optimization in ILSP, there are  several studies (Curcio et al
 computing the surrogate models is one of the most applications of ML in data-driven optimization (For more information see Jin et al. (2018)). ML is used in several manners in the scheduling problems such as selecting the parameters of heuristic (Mönch et al. 2006), resources dispatching (Chen and Yen 2011), selection of the best solving algorithm (de León et al. 2017), predict consequences of scheduling decisions (Berral et al. 2010), learning constraint's parameters (Picard-Cantin et al. 2016), etc. Finding the best dispatching rule application of the ML techniques in the dynamic scheduling and rescheduling problems (Metan and Sabuncuoglu 2005; Mouelhi-Chibani and Pierreval 2010; Shiue 2009). Based on our knowledge there is not any benchmark study that has been investigated the data-driven robust optimization and also ML for the rescheduling in ILSP and this paper is the first effort to extend data-driven robust scheduling for ILSP using ML.
 
 \section{Problem description}
-This paper investigates ILSP in the job shop problems considering sequence dependent setup time. There are predefined number of jobs ($j=1,...,J$) including several operations ($o=1,...,h_{j}$) that should proceed with $M$ capacitated machines while the processing time of operations are stochastic. The planning horizon contains finite periods ($t=1,...,T$). In addition of initial demands related to jobs in each period the new random demands of jobs will arrive to the system. The back-orders (satisfy all or part of demand after its due date) is not allowed. Therefore the decision-maker given the processing time uncertainty should determine the number of setups, amount of production in each setup and also the sequence of operations so that all initial and new random demands met according to their due dates. Furthermore, the following assumptions are applied:
+This paper investigates ILSP  for the job shop problems considering sequence dependent setup time. There is a predefined number of jobs ($j=1,...,J$) including several operations ($o=1,...,h_{j}$) that  are processed with $M$ capacitated machines while the processing times of operations are stochastic. The planning horizon contains finite periods ($t=1,...,T$).
 
-\begin{quote}
+In addition  to the initial demands related to jobs in each period, new random demands of jobs may arrive to the system. Back-orders (satisfy all or part of demand after its due date)  are not allowed. Therefore, the decision-maker given the processing time uncertainty should determine the number of setups, amount of production in each setup and also the sequence of operations so that all initial and new random demands met according to their due dates. Furthermore, the following assumptions are applied:
+
+% \begin{quote}
 \begin{itemize}
-\item Machines can at the most process one operation at a time.
-\item An operation can be done only one time in a period.
+\item Machines process at most one operation at a time.
+\item An operation can be done only once in a period.
 \item The consumption coefficient of two consecutive operations is equal to 1 (one unit of predecessor operation is required for producing one unit of successor operation).
 \item Due dates of all demands are deterministic within the end of each periods.
 \end{itemize}
-\end{quote}
+% \end{quote}
 
 \section{SMT formulation (deterministic model)}
-In this section, the SMT formulation of ILSP is presented for the job shop problem. In this model the operation $o$ of job $j$ is noted by \textit{$O_{jo}$}. The other detailed information of the model is as follows.\\\\
+In this section, the SMT formulation of ILSP is presented for the job shop problem. In this model the operation $o$ of job $j$ is denoted by \textit{$O_{jo}$}. The other detailed information of the model is as follows.
+
 \iffalse
 \textbf{Indices}\\
 \parbox{30pt}{\textit{j,j$'$,k}} 
@@ -102,7 +112,8 @@ In this section, the SMT formulation of ILSP is presented for the job shop probl
 \parbox{208pt}{Index of periods  (\textit{t=1,..,T})}\\
 \\
 \fi
-\textbf{Parameters}\\
+
+\noindent\textbf{Parameters}\\
 \parbox{30pt}{\textit{$D_{jt}$}} 
 \parbox[t]{207pt}{Demand for job \textit{j} during period \textit{t}}\\
 \parbox{30pt}{\textit{$p_{jo}$}} 
@@ -110,13 +121,13 @@ In this section, the SMT formulation of ILSP is presented for the job shop probl
 \parbox{30pt}{\textit{$C_{mt}$}} 
 \parbox[t]{207pt}{Capacity of machine \textit{m} during period \textit{t}}\\
 \parbox{30pt}{\textit{$\delta_{joj'o'}$}} 
-\parbox[t]{207pt}{Setup time of $O_{jo}$ if processed immediately after $O_{j'o'}$ on a same machine}\\
+\parbox[t]{207pt}{Setup time of $O_{jo}$ if processed immediately after $O_{j'o'}$ on the same machine}\\
 \parbox{30pt}{\textit{$a_{jo}$}} 
-\parbox[t]{207pt}{Machine, which is supposed to process $O_{jo}$}\\
+\parbox[t]{207pt}{Machine  that is supposed to process $O_{jo}$}\\
 \parbox{30pt}{\textit{L}} 
 \parbox[t]{207pt}{Length of each period}\\
-\\
-\textbf{Variables}\\
+
+\noindent\textbf{Variables}\\
 \parbox{30pt}{\textit{$x_{jot}$}} 
 \parbox[t]{207pt}{Quantity of $O_{jo}$ that is produced in period \textit{t}}\\
 \parbox{30pt}{\textit{$s_{jot}$}} 
@@ -124,7 +135,7 @@ In this section, the SMT formulation of ILSP is presented for the job shop probl
 \parbox{30pt}{\textit{$I_{jot}$}} 
 \parbox[t]{207pt}{Amount of inventory of $O_{jo}$ at the end of period \textit{t}}\\
 
-With the notations introduced above, the problem can be formulated in the SMT format  as follows:
+With the notation introduced above, the problem is formulated in the SMT formulation  as follows:
 \begin{equation}
 I_{j h_j t-1}+x_{j h_j t} - I_{j h_j t} = D_{jt} \quad\quad  \forall t, \forall j
 \end{equation}
@@ -168,10 +179,21 @@ O_{jo}\neq O_{j'o'},a_{jo}=a_{j'o'}$$
 The inventory balance regarding the last operation of each job, between periods, is ensured in Constraint (1); Constraint (2) shows the balance for other operations. Constraints (3) guarantees the $O_{jo}$ should proceed before the $O_{jo+1}$ in period $t$ if there is no minimum required inventory of this operation at the end of period $t-1$. The capacity restriction of each machine is respected in Constraint (4). Constraints (5) determines the sequence of $O_{jo}$ and $O_{j'o'}$ with same machine in period $t$ considering the sequence dependent setup time. In this constraint $\chi_{joj'o'}^{(t)}$ is an alternative variable for simplifying the model. This variable is equal to 1 if there is at least one operation between $O_{jo}$ and $O_{j'o'}$ in period $t$; otherwise is equal to 0 (The equivalent SMT formulation of $\chi_{joj'o'}^{(t)}$ is presented in the appendix). Constraints (6) specify the restrictions of start time and finish time of each operation within period $t$.
 
 \section{Data Driven Robust approach}
-There are some challenges to rescheduling problems. Creating the feasibility conditions in rescheduling is the main obstacle to provide a new schedule. In the completely reactive rescheduling, the main question is if the available resources are enough for feasible rescheduling or not? This paper presents a new approach to determine the safety stock and safety slack (2-SS) values as a strategy to satisfy the feasibility of solutions after changes of data (demand and processing time). Although this strategy may lead to extremely conservative and costly solutions. For example, in the ILSP, the inventory holding cost will be extremely increased by considering the high level of safety stock. On the other side, the high-risk solutions (risk of infeasibility) and subsequently cost of shortage or unmet demands will be increased when we consider the low level of safety stock. Indeed, the decision-maker should strike a balance between the risk of infeasibility and another system costs such as inventory holding cost. For this reason, the 2-SS strategy combined with a regression neural network algorithm and a K-Mean based heuristic for finding a reliable and cost-efficient value of safety stock and safety slack through the adaption of existing data and historical data. 
+There are some challenges to rescheduling problems. Creating the feasibility conditions in rescheduling is the main obstacle to providing a new schedule. In the completely reactive rescheduling, the main question is if the available resources are sufficient for feasible rescheduling or not? This paper proposes a new approach based on \emph{safety stock and safety slack (2-SS)} as a strategy to preserve feasibility of solutions after changes of data (of demand and processing time).
+
+On its own, this strategy may lead to overly conservative and costly solutions. For example, the inventory holding cost may overly increase by considering a high level of safety stock. On the other side, high-risk solutions (risk of infeasibility) and subsequently cost of shortage or unmet demands increased when we consider a low level of safety stock. Indeed, {\it the decision-maker should strike a balance between the risk of infeasibility and system costs such as inventory holding cost}.
+%
+
+To achieve this balance, we embellish the 2-SS strategy with machine
+learning based on a neural network and \mbox{K-Mean} based heuristic,  which
+aid in finding reliable and cost-efficient values of safety stock and safety slack through the adaption of
+existing data and historical data. 
+
+
+% For this reason, the 2-SS strategy combined with a regression neural network algorithm and a K-Mean based heuristic for finding a reliable and cost-efficient value of safety stock and safety slack through the adaption of existing data and historical data. 
 
 \subsection{2-SS approach}
-Figure 1 shows how the additional value of lot-size (safety stock) and machine idle time (safety slack) can make the initial plan robust against the possible increase in demand and processing time. In this figure, each task illustrated by $O_{jo}$ and as well the size of lot inside parentheses. In figure 1.a the deterministic plan with optimal value of completion time  is displayed without considering the demand and processing time uncertainty. In figures 1.b and 1.c the resilience of the plan (1.a) has been strengthened by considering the safety stock and the safety slack with completion time equal to 37.
+Figure 1 shows how the additional lot-size (safety stock) and machine idle time (safety slack) can make the initial plan robust against the possible increase in demand and processing time. In this figure, each task illustrated by $O_{jo}$ and as well the size of lot inside parentheses. In figure 1.a the deterministic plan with optimal value of completion time  is displayed without considering the demand and processing time uncertainty. In figures 1.b and 1.c the resilience of the plan (1.a) has been strengthened by considering the safety stock and the safety slack with completion time equal to 37.
 \begin{figure}[t]
 \begin{subfigure}{.46\textwidth}
   \centering
@@ -200,7 +222,16 @@ Figure 1 shows how the additional value of lot-size (safety stock) and machine i
 
 \subsection{Neural network}
 The uncertainty distribution functions in production planning is a function of several  dependent or independent factors such as product life cycle, marketing plans, competitors, seasonal changes, rate of returned product, human resource abilities and other physical, chemical and environmental conditions, etc. 
-This paper develops a regression neural network (NN) for estimation the safety stock and safety slack level through interpretation of demand and processing time distribution functions. We have considered the total amount of realized demands in the last periods and current period and also the current period number as three effective factors on the demand distribution. Concerning the first and second factors, the higher value of the demand in previous and current periods can provide a higher value of demand in the next periods and vice versa. There is more correlation between the random demands in current period with the observed amount of demand in the same period than previous periods. For the third factor,we considered dependency between the amount of demand and period number. The amount of machine idle time is also considered as an effective factor on the processing time. The more value of machine idle time as a time for doing machine services can provide less processing time. The NN that used here is composed of two separate networks. One is related to safety stock and another is related to safety slack prediction. Each of them are trained separately based on their specific input and output value. The meanings of the input and output value for both networks are shown in Table 1. The structure of the two networks is the same including one input layer, two hidden layers, and one output layer.
+This paper develops a regression neural network (NN) for estimating the safety stock and safety slack level through interpretation of demand and processing time distribution functions.
+
+% We consider the total amount of realized demands in the last periods and current period and also the current period number as three effective factors on the demand distribution.
+We consider the following three factors influencing the distribution of the demand:
+total amount of realized demands in the  previous periods,
+realized demand in the current period, and the current period number.
+%
+These are chosen based on the following rationale.
+%
+Concerning the first and second factors, the higher demand in previous and current periods may lead to a higher demand in the next periods and vice versa. There is more correlation between the random demands in current period with the observed amount of demand in the same period than previous periods. For the third factor, we consider dependency between the amount of demand and period number. The amount of machine idle time is also considered as an effective factor on the processing time. The more value of machine idle time as a time for doing machine services can provide less processing time. The NN used here comprises two separate networks. One is related to safety stock and another is related to safety slack prediction. Each of them  is trained separately based on their specific input and output value. The meaning of the input and output value for both networks  is shown in Table~\ref{table1}. The structure of the two networks is the same including one input layer, two hidden layers, and one output layer.
 
 \begin{table}[t]
 \scriptsize
@@ -218,15 +249,16 @@ Network  & Input  & Output  \\
  & \makecell{ 1)	Global optimum \\inventory level \\ considering all realized \\ demands in the sample } \\
  \hline
 \makecell{ Network 2 \\ (safety slack \\ prediction)}
- & \makecell{ 1)Total machines idle \\ time in the last period }
- & \makecell{ $max\left\{0,\tilde{p}_{jo}-p_{jo}\right\}$} \\
+ & \makecell{ 1) Total machines idle \\ time in the last period }
+    & \makecell{ $\textit{max}\left\{0,\tilde{p}_{jo}-p_{jo}\right\}$} \\
  \hline
 \end{tabular}
 \label{table1}
 \end{table}
 
-Based on information represented in table 1 there are $2J+1$ nodes in the input layer of the neural network 1. There are $\sum_{j=1}^{J} h_{j}T$ nodes in the output layer of network 1 that correspond to global optimum inventory level ($I_{jot}^{*}$). We have to solve an optimization model with aim of minimization of system cost for each sample of training set considering the final observed demand. The obtained optimum values for inventories is used as value of nodes correspond to the output layer. Forasmuch as the proposed NN will be executed during the RP approach the size of the output layer will be changed and is equal to $\sum_{j=1}^{J} h_{j}(T-t+1)$ in iteration $t$ (current period = $t$). 
-There are $M$ nodes in the input layer of the network 2.There are $\sum_{j=1}^{J} h_{j}$ nodes in the output layer of network 2 that correspond to $max\left\{0,\tilde{p}_{jo}-p_{jo}\right\}$ in each sample while $p_{jo}$ and $\tilde{p}_{jo}$ are the nominal and realized value of processing time for $O_{jo}$ respectively. In iteration $t$ of RP, there are two sub-networks for network 2 which one is responsible for the prediction of safety slack in period $t$ and another for period $t+1$. The periods greater than $t+1$ will be solved with nominal values of processing time. It should be noted that there is not any executed schedule for period $t$ in the iteration $t$ of proposed RP approach. Therefore, we have to use an approximation schema to estimate the machines idle time in period $t$ according to (7).
+Based on information represented in Table~\ref{table1}, there are $2J+1$ nodes in the input layer of the neural network~1. There are $\sum_{j=1}^{J} h_{j}T$ nodes in the output layer of network~1 that correspond to global optimum inventory level ($I_{jot}^{*}$). We have to solve an optimization model with the aim of minimizing the cost for each sample of training set considering the final observed demand. The obtained optimum values for inventories is used as value of nodes corresponding to the output layer. Since the proposed NN is executed in each period, the size of the output layer changes and is equal to $\sum_{j=1}^{J} h_{j}(T-t+1)$ in iteration $t$ (current period = $t$). 
+
+There are $M$ nodes in the input layer of the network 2. There are $\sum_{j=1}^{J} h_{j}$ nodes in the output layer of network 2 that correspond to $\textit{max}\left\{0,\tilde{p}_{jo}-p_{jo}\right\}$ in each sample while $p_{jo}$ and $\tilde{p}_{jo}$ are the nominal and realized value of processing time for $O_{jo}$ respectively. In iteration $t$ of RP, there are two sub-networks for network 2,   where one is responsible for the prediction of safety slack in period $t$ and another for period $t+1$. The periods greater than $t+1$ will be solved with nominal values of processing time. It should be noted that there is not any executed schedule for period $t$ in the iteration $t$ of proposed RP approach. Therefore, we have to use an approximation schema to estimate the machines idle time in period $t$ according to (7).
 \begin{equation}
 \sum_{j=1}^{J} \sum_{o=1|a_{jo}=m}^{h_{j}} \overline{x}_{jot}+S_{jot}^{+(t-1)}-S_{jot-1}^{+(t-1)}
 \end{equation}

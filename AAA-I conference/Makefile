@@ -11,10 +11,11 @@ TRGT=Robust\ CLSP-AAAI
 LATEXMK?=latexmk
 
 all:
-	$(LATEXMK) -pdf $(LATEXARGS) $(TRGT) $(POST_CMD)
+	@$(LATEXMK) -pdf $(LATEXARGS) $(TRGT) $(POST_CMD)
 
 clean:
 	@latexmk -c $(TRGT)
 
 allclean: clean
-	$(LATEXMK) -C "$(TRGT)"
+	$(LATEXMK) -C $(TRGT)
+	rm -fv $(TRGT).bbl
